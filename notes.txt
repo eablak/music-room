@@ -1,0 +1,2 @@
+docker exec -it <CONTAINER_ADI> psql -U <KULLANICI_ADI> -d <DB_NAME> 
+docker exec -it musicroom-db psql -U musicroom -d musicroom_db
