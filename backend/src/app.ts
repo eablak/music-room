@@ -1,16 +1,25 @@
-import express, { Request, Response } from 'express';
+import express from "express";
+import { AppDataSource } from "./data-source";
+import { User } from "./entities/User";
 
 const app = express();
-const port = process.env.PORT || 3000;
-
 app.use(express.json());
 
-app.get('/', (req: Request, res: Response) => {
-  res.send('Hello World!');
+app.post("/users", async (req, res) => {
+
+  const userRepo = AppDataSource.getRepository(User);
+  const user = userRepo.create(req.body);
+  const saved = await userRepo.save(user);
+  res.json(saved);
+
 });
 
-app.listen(port, () => {
-  console.log(`Server running on http://localhost:${port}`);
-});
+app.get("/users", async (req, res) => {
+
+  const userRepo = AppDataSource.getRepository(User);
+  const users = await userRepo.find();
+  res.json(users);
+
+})
 
 export default app;
