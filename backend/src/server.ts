@@ -1,10 +1,15 @@
 import express from "express";
 import { AppDataSource } from "./data-source";
-import userRoutes from "./routes/user.routes"
+import userRoutes from "./routes/user.routes";
+import swaggerUi from "swagger-ui-express";
+import { swaggerSpec } from "./swagger";
+
 
 const app = express();
+
 app.use(express.json());
 app.use("/", userRoutes);
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 
 AppDataSource.initialize()
