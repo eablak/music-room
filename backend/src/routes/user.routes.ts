@@ -16,15 +16,19 @@ const router = Router();
  *            schema: # Request body contents
  *              type: object
  *              properties:
- *                id:
- *                  type: integer
  *                name:
  *                  type: string
- *                email:
+ *                surname:
  *                  type: string
+ *                username:
+ *                  type: string
+ *                birth_date:
+ *                  type: date
  *              example: # Sample object
- *                name: Jessica Smith
- *                email: jessica@gmail.com
+ *                name: Esra
+ *                surname: Ablak
+ *                username: eablak
+ *                birth_date: 1999-12-30
  *      responses:
  *        "200":
  *          description: OK

@@ -5,8 +5,10 @@ import { User } from "../entities/User";
 export const createUser = async (req: Request, res: Response) => {
 
     const userRepo = AppDataSource.getRepository(User);
-    const user = userRepo.create(req.body);
-    const saved = await userRepo.save(user);
+
+    const { name, surname, username, birth_date } = req.body;
+    const saved = await userRepo.save({ name, surname, username, birth_date });
+
     res.json(saved);
 
 };
