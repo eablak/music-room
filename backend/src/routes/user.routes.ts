@@ -22,12 +22,18 @@ const router = Router();
  *                  type: string
  *                username:
  *                  type: string
+ *                email:
+ *                  type: string
+ *                password:
+ *                  type: string
  *                birth_date:
  *                  type: date
  *              example: # Sample object
  *                name: Esra
  *                surname: Ablak
  *                username: eablak
+ *                email: esraablak@gmail.com
+ *                password: pass1234
  *                birth_date: 1999-12-30
  *      responses:
  *        "200":
