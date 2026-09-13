@@ -2,6 +2,8 @@ import { Request, Response } from "express";
 import { AppDataSource } from "../data-source";
 import { User } from "../entities/User";
 import bcrypt from "bcryptjs";
+import * as crypto from "crypto";
+import { sendVerificationEmail } from "../services/EmailService";
 
 
 // create user via email
@@ -13,12 +15,66 @@ export const createUser = async (req: Request, res: Response) => {
         return res.status(400).json({ message: "Email and password is required!"})
     }
     
+
+    try{
+        const userRepo = AppDataSource.getRepository(User);
+        const hashed_pass = await bcrypt.hash(password, 10);
+
+        const token = crypto.randomBytes(32).toString("hex");
+        const expires = new Date(Date.now() + 24*60*60*1000);
+
+        const saved = await userRepo.save({ 
+            name,
+            surname,
+            username,
+            email,
+            password: hashed_pass,
+            birth_date,
+            email_verification_token: token,
+            email_verification_expires: expires
+        });
+
+        await sendVerificationEmail(email, token);
+
+        res.json(saved);
+
+    }catch (err: any){
+        if (err.code === "23505"){
+            return res.status(409).json({ message: "Email or username already exsist!"});
+        }
+        console.log(err);
+        res.status(500).json({ message: "Registiration failed"});
+    }
+
+};
+
+
+export const verifyEmail = async (req: Request, res: Response) => {
+
+    const { token } = req.query;
+
+    if (!token){
+        return res.status(400).json({ message: "Token is required!"});
+    }
+
     const userRepo = AppDataSource.getRepository(User);
-    const hashed_pass = await bcrypt.hash(password, 10);
+    const user = await userRepo.findOneBy({ email_verification_token: token as string});
 
-    const saved = await userRepo.save({ name, surname, username, email, hashed_pass, birth_date });
-    res.json(saved);
+    if (!user){
+        return res.status(400).json({ message: "Invalid token!"});
+    }
 
+    if (user.email_verification_expires < new Date()){
+        return res.status(400).json({ message: "Token has expires!"});
+    }
+
+    user.is_email_verified = true;
+    user.email_verification_token = null as any;
+    user.email_verification_expires = null as any;
+
+    await userRepo.save(user);
+    console.log("Email verified succesfully!");
+    res.json({ message: "Email verified succesfully!"});
 };
 
 

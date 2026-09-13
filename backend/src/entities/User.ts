@@ -24,6 +24,12 @@ export class User{
     @Column({ default: false })
     is_email_verified!: boolean;
 
+    @Column({ nullable: true })
+    email_verification_token!: string;
+
+    @Column({ nullable: true, type: "timestamp" })
+    email_verification_expires!: Date;
+
     @CreateDateColumn()
     created_date!: Date;
 

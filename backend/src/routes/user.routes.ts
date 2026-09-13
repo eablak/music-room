@@ -1,8 +1,7 @@
 import { Router } from "express";
-import { createUser, getUsers } from "../controllers/UserController";
+import { createUser, getUsers, verifyEmail } from "../controllers/UserController";
 
 const router = Router();
-
 
 /**
  * @openapi
@@ -32,7 +31,7 @@ const router = Router();
  *                name: Esra
  *                surname: Ablak
  *                username: eablak
- *                email: esraablak@gmail.com
+ *                email: esrablk9@gmail.com
  *                password: pass1234
  *                birth_date: 1999-12-30
  *      responses:
@@ -53,5 +52,8 @@ router.post("/users", createUser);
  *          description: Numeric ID of the user to get
  */
 router.get("/users", getUsers);
+
+router.get("/verify", verifyEmail);
+
 
 export default router;
