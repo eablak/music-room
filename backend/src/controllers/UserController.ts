@@ -3,7 +3,7 @@ import { AppDataSource } from "../data-source";
 import { User } from "../entities/User";
 import bcrypt from "bcryptjs";
 import * as crypto from "crypto";
-import { sendVerificationEmail } from "../services/EmailService";
+import { sendVerificationEmail, sendResetPassword } from "../services/EmailService";
 
 
 // create user via email
@@ -65,7 +65,7 @@ export const verifyEmail = async (req: Request, res: Response) => {
     }
 
     if (user.email_verification_expires < new Date()){
-        return res.status(400).json({ message: "Token has expires!"});
+        return res.status(400).json({ message: "Token has expired!"});
     }
 
     user.is_email_verified = true;
@@ -74,7 +74,81 @@ export const verifyEmail = async (req: Request, res: Response) => {
 
     await userRepo.save(user);
     console.log("Email verified succesfully!");
-    res.json({ message: "Email verified succesfully!"});
+    res.json({ message: "Email verified successfully!"});
+};
+
+
+export const changePassword = async (req: Request, res: Response) => {
+
+    const { email } = req.body;
+
+    if (!email){
+        return res.status(400).json({ message: "Email is required!"})
+    }
+
+    try{
+
+        const userRepo = AppDataSource.getRepository(User);
+        const user = await userRepo.findOneBy({ email: email });
+
+        if (!user){
+            return res.status(400).json({ message: "Invalid email address!"});
+        }
+
+        if (!user.is_email_verified){
+            return res.status(400).json({ message: "You should validate your email address first!"});
+        }
+
+        const token = crypto.randomBytes(32).toString("hex");
+        const expires = new Date(Date.now() + 24*60*60*1000);
+
+        user.password_reset_token = token,
+        user.password_reset_expires = expires
+
+        console.log("PASS TOKEN: ", token); // postman
+        await userRepo.save(user);
+        
+        await sendResetPassword(email, token);
+        res.json({ message: "Password resent email sent!"});
+
+    }catch (err: any){
+        console.log(err);
+        res.status(500).json({ message: "Reset password failed." });
+    }
+
+};
+
+
+export const savePassword = async (req: Request, res: Response) => {
+
+    const { token } = req.query;
+    const { new_password } = req.body;
+
+    if (!token || !new_password){
+        return res.status(400).json({ message: "Token and new password is required!"});
+    }
+
+    const userRepo = AppDataSource.getRepository(User);
+    const user = await userRepo.findOneBy({ password_reset_token: token as string});
+    
+    if (!user){
+        return res.status(400).json({ message: "Invalid token!"});
+    }
+    
+    if (user.password_reset_expires < new Date()){
+        return res.status(400).json({ message: "Token has expired!"});
+    }
+    
+    const hashed_pass = await bcrypt.hash(new_password as string, 10);
+    
+    user.password = hashed_pass;
+    user.password_reset_expires = null as any;
+    user.password_reset_token = null as any;
+
+    await userRepo.save(user);
+    console.log("Password successfully changed!");
+    res.json({ message: "Password successfully changed!"});
+
 };
 
 

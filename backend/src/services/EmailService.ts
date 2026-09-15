@@ -29,3 +29,19 @@ export const sendVerificationEmail = async (to: string, token: string) => {
 
     console.log("Email sent");
 };
+
+
+export const sendResetPassword = async (to: string, token: string) => {
+
+    const link = `http://localhost:3000/reset?token=${token}`;
+
+    await transporter.sendMail({
+        
+        from: process.env.GMAIL_USER,
+        to,
+        subject: "Reset your password",
+        html:  `<p>Please click the link below to reset your password:</p><a href="${link}">Reset Password</a>`,
+    
+    });
+
+};

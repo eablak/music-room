@@ -42,4 +42,10 @@ export class User{
     @Column({ nullable: true })
     birth_date!: Date;
 
+    @Column({ nullable: true })
+    password_reset_token!: string;
+
+    @Column({ nullable: true, type: "timestamp" })
+    password_reset_expires!: Date;
+
 }

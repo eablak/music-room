@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createUser, getUsers, verifyEmail } from "../controllers/UserController";
+import { changePassword, createUser, getUsers, verifyEmail, savePassword } from "../controllers/UserController";
 
 const router = Router();
 
@@ -44,6 +44,117 @@ router.post("/users", createUser);
 /**
  * @openapi
  * paths:
+ *   /verify:
+ *     get:
+ *       summary: Verify user email
+ *       parameters:
+ *         - in: query
+ *           name: token
+ *           required: true
+ *           description: Token that you will get in your email box.
+ *           schema:
+ *             type: string
+ *       responses:
+ *         200:
+ *           description: Email verified successfully.
+ *         400:
+ *           description: Email verification failed.
+ *           content:
+ *             application/json:
+ *               schema:
+ *                 type: object
+ *                 properties:
+ *                   message:
+ *                     type: string
+ *                     examples:
+ *                       missing:
+ *                         value: Token is required.
+ *                       invalid:
+ *                         value: Invalid token.
+ *                       expired:
+ *                         value: Token has expired.
+ */
+router.get("/verify", verifyEmail);
+
+
+/**
+ * @openapi
+ * paths:
+ *   /users/reset-password:
+ *     post:
+ *       summary: Request a password reset email
+ *       requestBody:
+ *         required: true
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 email:
+ *                   type: string
+ *               example:
+ *                 email: esrablk9@gmail.com
+ *       responses:
+ *         "200":
+ *           description: Reset email sent successfully.
+ *         "400":
+ *           description: Invalid email address.
+ *         "500":
+ *           description: Reset password failed.
+ */
+router.post("/users/reset-password", changePassword);
+
+
+/**
+ * @openapi
+ * paths:
+ *   /reset:
+ *     post:
+ *       summary: Save new password using reset token
+ *       parameters:
+ *         - in: query
+ *           name: token
+ *           required: true
+ *           description: Token received in the password reset email.
+ *           schema:
+ *             type: string
+ *       requestBody:
+ *         required: true
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 new_password:
+ *                   type: string
+ *               example:
+ *                 new_password: newPass1234
+ *       responses:
+ *         "200":
+ *           description: Password successfully changed.
+ *         "400":
+ *           description: Password reset failed.
+ *           content:
+ *             application/json:
+ *               schema:
+ *                 type: object
+ *                 properties:
+ *                   message:
+ *                     type: string
+ *                     examples:
+ *                       missing:
+ *                         value: Token and new password are required.
+ *                       invalid:
+ *                         value: Invalid token.
+ *                       expired:
+ *                         value: Token has expired.
+ */
+router.post("/reset", savePassword);
+
+
+/**
+ * @openapi
+ * paths:
  *  /users:
  *    get:
  *      summary: Get all users
@@ -53,7 +164,6 @@ router.post("/users", createUser);
  */
 router.get("/users", getUsers);
 
-router.get("/verify", verifyEmail);
 
 
 export default router;
