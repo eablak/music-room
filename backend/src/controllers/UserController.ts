@@ -4,6 +4,7 @@ import { User } from "../entities/User";
 import bcrypt from "bcryptjs";
 import * as crypto from "crypto";
 import { sendVerificationEmail, sendResetPassword } from "../services/EmailService";
+import jwt from "jsonwebtoken";
 
 
 // create user via email
@@ -152,12 +153,34 @@ export const savePassword = async (req: Request, res: Response) => {
 };
 
 
-export const createUserOAuth = async (req: Request, res: Response) => {
+export const googleCallback = async (req: Request, res: Response) => {
 
-    
+    const user = req.user as User;
+
+    if (!user){
+        return res.status(401).json({ message: "Google authentication failed."});
+    }
+
+    const token = jwt.sign(
+        {id: user.id, email: user.email},
+        process.env.JWT_SECRET!,
+        {expiresIn: "1h" }
+    );
+
+    res.status(200).json({
+        success: true,
+        message: "Login successfull",
+        token,
+        user: {
+            id: user.id,
+            name: user.name,
+            surname: user.surname,
+            email: user.email,
+            profile_photo: user.profile_photo,
+        },
+    });
 
 };
-
 
 
 export const getUsers = async (req: Request, res: Response) => {

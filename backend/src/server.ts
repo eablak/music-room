@@ -3,13 +3,14 @@ import { AppDataSource } from "./data-source";
 import userRoutes from "./routes/user.routes";
 import swaggerUi from "swagger-ui-express";
 import { swaggerSpec } from "./swagger";
-
+import passport from "passport";
 
 const app = express();
 
 app.use(express.json());
 app.use("/", userRoutes);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.use(passport.initialize());
 
 
 AppDataSource.initialize()

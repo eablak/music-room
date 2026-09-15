@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { changePassword, createUser, getUsers, verifyEmail, savePassword, createUserOAuth } from "../controllers/UserController";
+import { changePassword, createUser, getUsers, verifyEmail, savePassword, googleCallback } from "../controllers/UserController";
 import passport from "../services/GoogleService";
 
 
@@ -154,9 +154,13 @@ router.post("/users/reset-password", changePassword);
 router.post("/reset", savePassword);
 
 
-router.get("/google", passport.authenticate("google", { scope: ["email", "profile"], }));
+router.get("/auth/google", passport.authenticate("google", { session: false, scope: ["email", "profile"], }));
 
-router.get("/auth/google/callback", passport.authenticate("google", {failureRedirect: "/auth/google/failed"}), (req, res) => { res.send("This is the callback route");});
+router.get("/auth/google/callback", passport.authenticate("google", { session: false, failureRedirect: "/auth/google/failed"}), googleCallback);
+
+router.get("/auth/google/failed", (req, res) => { res.status(401).json({message: "Google login failed"}); });
+
+
 
 
 /**
