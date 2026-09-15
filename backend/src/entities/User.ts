@@ -48,4 +48,9 @@ export class User{
     @Column({ nullable: true, type: "timestamp" })
     password_reset_expires!: Date;
 
+    @Column({ nullable: true })
+    google_id!: string;
+
+    @Column({ default: "email "})
+    auth_provider!: string;
 }

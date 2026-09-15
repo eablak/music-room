@@ -1,5 +1,7 @@
 import { Router } from "express";
-import { changePassword, createUser, getUsers, verifyEmail, savePassword } from "../controllers/UserController";
+import { changePassword, createUser, getUsers, verifyEmail, savePassword, createUserOAuth } from "../controllers/UserController";
+import passport from "../services/GoogleService";
+
 
 const router = Router();
 
@@ -150,6 +152,11 @@ router.post("/users/reset-password", changePassword);
  *                         value: Token has expired.
  */
 router.post("/reset", savePassword);
+
+
+router.get("/google", passport.authenticate("google", { scope: ["email", "profile"], }));
+
+router.get("/auth/google/callback", passport.authenticate("google", {failureRedirect: "/auth/google/failed"}), (req, res) => { res.send("This is the callback route");});
 
 
 /**

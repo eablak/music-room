@@ -152,6 +152,14 @@ export const savePassword = async (req: Request, res: Response) => {
 };
 
 
+export const createUserOAuth = async (req: Request, res: Response) => {
+
+    
+
+};
+
+
+
 export const getUsers = async (req: Request, res: Response) => {
 
     const userRepo = AppDataSource.getRepository(User);
