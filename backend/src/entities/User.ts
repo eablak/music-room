@@ -53,4 +53,7 @@ export class User{
 
     @Column({ default: "email "})
     auth_provider!: string;
+
+    @Column({ nullable: true })
+    facebook_id!: string;
 }

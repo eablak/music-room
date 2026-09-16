@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { changePassword, createUser, getUsers, verifyEmail, savePassword, googleCallback } from "../controllers/UserController";
 import passport from "../services/GoogleService";
+import "../services/FacebookService";
 
 
 const router = Router();
@@ -154,14 +155,108 @@ router.post("/users/reset-password", changePassword);
 router.post("/reset", savePassword);
 
 
+/**
+ * @openapi
+ * /auth/google:
+ *   get:
+ *     summary: Start Google authentication
+ *     tags:
+ *       - Authentication
+ *     responses:
+ *       302:
+ *         description: Redirects the user to Google for authentication
+ */
 router.get("/auth/google", passport.authenticate("google", { session: false, scope: ["email", "profile"], }));
 
+
+/**
+ * @openapi
+ * /auth/google/callback:
+ *   get:
+ *     summary: Google authentication callback
+ *     tags:
+ *       - Authentication
+ *     responses:
+ *       200:
+ *         description: Google authentication successful
+ *       401:
+ *         description: Google login failed
+ */
 router.get("/auth/google/callback", passport.authenticate("google", { session: false, failureRedirect: "/auth/google/failed"}), googleCallback);
 
+
+/**
+ * @swagger
+ * /auth/google/failed:
+ *   get:
+ *     summary: Google authentication failed
+ *     tags:
+ *       - Authentication
+ *     responses:
+ *       401:
+ *         description: Google login failed
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Google login failed
+ */
 router.get("/auth/google/failed", (req, res) => { res.status(401).json({message: "Google login failed"}); });
 
 
+/**
+ * @openapi
+ * /auth/facebook:
+ *   get:
+ *     summary: Start Facebook authentication
+ *     tags:
+ *       - Authentication
+ *     responses:
+ *       302:
+ *         description: Redirects the user to Facebook for authentication
+ */
+router.get("/auth/facebook", passport.authenticate("facebook", { session: false, scope: ["email", "public_profile"], }));
 
+
+/**
+ * @openapi
+ * /auth/facebook/callback:
+ *   get:
+ *     summary: Facebook authentication callback
+ *     tags:
+ *       - Authentication
+ *     responses:
+ *       200:
+ *         description: Facebook authentication successful
+ *       401:
+ *         description: Facebook login failed
+ */
+router.get("/auth/facebook/callback", passport.authenticate("facebook", { session: false, failureRedirect: "/auth/facebook/failed"}), googleCallback);
+
+
+/**
+ * @swagger
+ * /auth/facebook/failed:
+ *   get:
+ *     summary: Facebook authentication failed
+ *     tags:
+ *       - Authentication
+ *     responses:
+ *       401:
+ *         description: Facebook login failed
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Facebook login failed
+ */
+router.get("/auth/facebook/failed", (req, res) => { res.status(401).json({message: "Facebook login failed"}); });
 
 /**
  * @openapi
