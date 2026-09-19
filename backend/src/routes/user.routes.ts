@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { changePassword, createUser, getUsers, verifyEmail, savePassword, googleCallback, getInfos } from "../controllers/UserController";
+import { changePassword, createUser, getUsers, verifyEmail, savePassword, googleCallback, getInfos, login } from "../controllers/UserController";
 import passport from "../services/GoogleService";
 import "../services/FacebookService";
 import { authMiddleware } from "../middlewares/authMiddleware";
@@ -259,9 +259,62 @@ router.get("/auth/facebook/callback", passport.authenticate("facebook", { sessio
 router.get("/auth/facebook/failed", (req, res) => { res.status(401).json({message: "Facebook login failed"}); });
 
 
+/**
+ * @swagger
+ * /users/{id}:
+ *   get:
+ *     summary: Get user information
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: User information retrieved successfully
+ *       404:
+ *         description: User not found
+ *       401:
+ *         description: Unauthorized
+ */
 router.get("/users/:id", authMiddleware ,getInfos);
 
 
+/**
+ * @swagger
+ * /auth/login:
+ *   post:
+ *     summary: User login
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - password
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 example: user@example.com
+ *               password:
+ *                 type: string
+ *                 example: password123
+ *     responses:
+ *       200:
+ *         description: Login successful
+ *       400:
+ *         description: Email and password are required
+ *       401:
+ *         description: Invalid credentials
+ */
+router.post("/auth/login", login);
 
 
 /**
