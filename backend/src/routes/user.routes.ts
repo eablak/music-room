@@ -1,8 +1,8 @@
 import { Router } from "express";
-import { changePassword, createUser, getUsers, verifyEmail, savePassword, googleCallback } from "../controllers/UserController";
+import { changePassword, createUser, getUsers, verifyEmail, savePassword, googleCallback, getInfos } from "../controllers/UserController";
 import passport from "../services/GoogleService";
 import "../services/FacebookService";
-
+import { authMiddleware } from "../middlewares/authMiddleware";
 
 const router = Router();
 
@@ -257,6 +257,12 @@ router.get("/auth/facebook/callback", passport.authenticate("facebook", { sessio
  *                   example: Facebook login failed
  */
 router.get("/auth/facebook/failed", (req, res) => { res.status(401).json({message: "Facebook login failed"}); });
+
+
+router.get("/users/:id", authMiddleware ,getInfos);
+
+
+
 
 /**
  * @openapi

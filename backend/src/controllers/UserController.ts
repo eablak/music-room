@@ -183,6 +183,45 @@ export const googleCallback = async (req: Request, res: Response) => {
 };
 
 
+export const getInfos = async (req: Request, res: Response) => {
+
+    const viewerId = req.userId;
+    const targetId = Number(req.params.id);
+    
+    const userRepo = AppDataSource.getRepository(User);
+    const user = await userRepo.findOneBy({id: Number(targetId)});
+
+    if (!user){
+        return res.status(404).json({message: "User not found!"});
+    }
+
+    if (viewerId === targetId){ // owner
+
+        const response = {
+
+            name: user.name,
+            surname: user.surname,
+            username: user.username,
+            profile_photo: user.profile_photo,
+            birth_date: user.birth_date
+
+        };
+
+        return res.status(200).json(response);
+
+
+    }else{ // no friendship for now
+
+        return res.status(404).json({ message: "no"});
+
+    }
+
+
+};
+
+
+
+
 export const getUsers = async (req: Request, res: Response) => {
 
     const userRepo = AppDataSource.getRepository(User);

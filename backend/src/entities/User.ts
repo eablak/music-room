@@ -7,19 +7,19 @@ export class User{
     id!: number;
 
     @Column()
-    name!: string;
+    name!: string;  // public
 
     @Column()
-    surname!: string;
+    surname!: string;   // public
 
     @Column({ unique: true })
-    username!: string;
+    username!: string;  // public
 
     @Column({ unique: true, nullable: true })
     email!: string;
 
     @Column({ nullable: true, select: false })
-    password!: string;
+    password!: string;  // private
 
     @Column({ default: false })
     is_email_verified!: boolean;
@@ -37,10 +37,10 @@ export class User{
     updated_date!: Date;
 
     @Column({ nullable: true })
-    profile_photo!: string;
+    profile_photo!: string;     // friends-only
 
     @Column({ nullable: true })
-    birth_date!: Date;
+    birth_date!: Date;  // friends-only
 
     @Column({ nullable: true })
     password_reset_token!: string;
@@ -51,7 +51,7 @@ export class User{
     @Column({ nullable: true })
     google_id!: string;
 
-    @Column({ default: "email "})
+    @Column({ default: "email"})
     auth_provider!: string;
 
     @Column({ nullable: true })
