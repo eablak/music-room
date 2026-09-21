@@ -5,6 +5,7 @@ import bcrypt from "bcryptjs";
 import * as crypto from "crypto";
 import { sendVerificationEmail, sendResetPassword } from "../services/EmailService";
 import jwt from "jsonwebtoken";
+import { signToken } from "../utils/token";
 
 
 // create user via email
@@ -161,11 +162,7 @@ export const googleCallback = async (req: Request, res: Response) => {
         return res.status(401).json({ message: "Google authentication failed."});
     }
 
-    const token = jwt.sign(
-        {id: user.id, email: user.email},
-        process.env.JWT_SECRET!,
-        {expiresIn: "1h" }
-    );
+    const token = signToken(user);
 
     res.status(200).json({
         success: true,
@@ -236,7 +233,11 @@ export const login = async (req: Request, res: Response) => {
         return res.status(401).json({message: "Invalid credentials!"});
     }
 
-    const token = jwt.sign({userId: user.id}, process.env.JWT_SECRET!, {expiresIn: "3h"});
+    if (!user.is_email_verified){
+        return res.status(401).json({message: "Please verify your email first."});
+    }
+
+    const token = signToken(user);
 
     return res.status(200).json({ token });
 
