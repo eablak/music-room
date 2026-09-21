@@ -6,9 +6,9 @@ import * as crypto from "crypto";
 import { sendVerificationEmail, sendResetPassword } from "../services/EmailService";
 import jwt from "jsonwebtoken";
 import { signToken } from "../utils/token";
+import { areFriends } from "../services/FriendshipService";
 
 
-// create user via email
 export const createUser = async (req: Request, res: Response) => {
 
     const { name, surname, username, email, password, birth_date } = req.body;
@@ -192,27 +192,21 @@ export const getInfos = async (req: Request, res: Response) => {
         return res.status(404).json({message: "User not found!"});
     }
 
-    if (viewerId === targetId){ // owner
+    const public_info = { name: user.name, surname: user.surname, username: user.username};
 
-        const response = {
+    const friendship_info = { profile_photo: user.profile_photo, birth_date: user.birth_date};
 
-            name: user.name,
-            surname: user.surname,
-            username: user.username,
-            profile_photo: user.profile_photo,
-            birth_date: user.birth_date
+    const private_info = { email: user.email, auth_provider: user.auth_provider};
 
-        };
-
-        return res.status(200).json(response);
-
-
-    }else{ // no friendship for now
-
-        return res.status(404).json({ message: "no"});
-
+    if (viewerId === targetId){
+        return res.status(200).json({ ...public_info, ...friendship_info, ...private_info})
     }
 
+    if (await areFriends(Number(viewerId), targetId)){
+        return res.status(200).json({ ...public_info, ...friendship_info})
+    }
+
+    return res.status(200).json({ ...public_info });
 
 };
 

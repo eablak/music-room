@@ -16,10 +16,10 @@ export class User{
     username!: string;  // public
 
     @Column({ unique: true, nullable: true })
-    email!: string;
+    email!: string; // private
 
     @Column({ nullable: true, select: false })
-    password!: string;  // private
+    password!: string;  
 
     @Column({ default: false })
     is_email_verified!: boolean;
@@ -52,7 +52,7 @@ export class User{
     google_id!: string;
 
     @Column({ default: "email"})
-    auth_provider!: string;
+    auth_provider!: string;  // private
 
     @Column({ nullable: true })
     facebook_id!: string;
