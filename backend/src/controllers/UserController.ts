@@ -217,7 +217,6 @@ export const getInfos = async (req: Request, res: Response) => {
 };
 
 
-// user can create acc. without password via google or facebook
 export const login = async (req: Request, res: Response) => {
 
     const {email, password} = req.body;
@@ -229,7 +228,7 @@ export const login = async (req: Request, res: Response) => {
     const userRepo = AppDataSource.getRepository(User);
     const user = await userRepo.createQueryBuilder("user").addSelect("user.password").where("user.email = :email", {email}).getOne();
 
-    if (!user || !await bcrypt.compare(password, user.password)){
+    if (!user || !user.password || !await bcrypt.compare(password, user.password)){
         return res.status(401).json({message: "Invalid credentials!"});
     }
 
