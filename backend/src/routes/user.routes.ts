@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { changePassword, createUser, getUsers, verifyEmail, savePassword, googleCallback, getInfos, login } from "../controllers/UserController";
+import { changePassword, createUser, getUsers, verifyEmail, savePassword, googleCallback, getInfos, login, sendFriendRequest, acceptFriendsRequest } from "../controllers/UserController";
 import passport from "../services/GoogleService";
 import "../services/FacebookService";
 import { authMiddleware } from "../middlewares/authMiddleware";
@@ -315,6 +315,58 @@ router.get("/users/:id", authMiddleware ,getInfos);
  *         description: Invalid credentials
  */
 router.post("/auth/login", login);
+
+
+/**
+ * @swagger
+ * /friends/{id}:
+ *   post:
+ *     summary: Send a friend request
+ *     tags: [Friends]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID of the user to send the request to
+ *     responses:
+ *       201:
+ *         description: Friend request sent
+ *       409:
+ *         description: Users are already friends
+ *       401:
+ *         description: Unauthorized
+ */
+router.post("/friends/:id", authMiddleware, sendFriendRequest);
+
+
+/**
+ * @swagger
+ * /friends/{id}/accept:
+ *   post:
+ *     summary: Accept a friend request
+ *     tags: [Friends]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID of the request sender
+ *     responses:
+ *       200:
+ *         description: Friendship request accepted
+ *       404:
+ *         description: No pending request
+ *       401:
+ *         description: Unauthorized
+ */
+router.post("/friends/:id/accept", authMiddleware, acceptFriendsRequest)
 
 
 /**

@@ -6,7 +6,8 @@ import * as crypto from "crypto";
 import { sendVerificationEmail, sendResetPassword } from "../services/EmailService";
 import jwt from "jsonwebtoken";
 import { signToken } from "../utils/token";
-import { areFriends } from "../services/FriendshipService";
+import { areFriends, findFriendship, statusFriendship } from "../services/FriendshipService";
+import { Friendship } from "../entities/Friendship";
 
 
 export const createUser = async (req: Request, res: Response) => {
@@ -237,6 +238,47 @@ export const login = async (req: Request, res: Response) => {
 };
 
 
+export const sendFriendRequest = async (req: Request, res: Response) => {
+
+    const requestSender = req.userId;
+    const requestReceiver = Number(req.params.id);
+
+    if (requestSender === requestReceiver){
+        return res.status(409).json({message: "You can't send a request to yourself."});
+    }
+
+    const userRepo = AppDataSource.getRepository(User);
+    const targetUser = await userRepo.findOneBy({id: requestReceiver});
+
+    const exsist = await findFriendship(Number(requestSender), requestReceiver);
+
+    if (exsist){
+        return res.status(409).json({ message: "Request already exsist or you are already friends."});
+    }
+
+    await AppDataSource.getRepository(Friendship).save({ sender: {id: requestSender}, receiver: {id: requestReceiver} });
+
+    return res.status(201).json({ message: "Friendship request sent."});
+};
+
+
+export const acceptFriendsRequest = async (req: Request, res: Response) => {
+
+    const requestReceiver = req.userId;
+    const requestSender = Number(req.params.id);
+
+    const requestStatus = await statusFriendship(Number(requestReceiver), requestSender);
+
+    if (!requestStatus){
+        return res.status(404).json({message: "No pending request!"});
+    }
+    
+    requestStatus.status = "accepted";
+    await AppDataSource.getRepository(Friendship).save(requestStatus);
+
+    return res.status(200).json({message: "Friendship request accepted."});
+
+}
 
 
 export const getUsers = async (req: Request, res: Response) => {
