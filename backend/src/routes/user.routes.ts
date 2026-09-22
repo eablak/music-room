@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { changePassword, createUser, getUsers, verifyEmail, savePassword, googleCallback, getInfos, login, sendFriendRequest, acceptFriendsRequest } from "../controllers/UserController";
+import { changePassword, createUser, getUsers, verifyEmail, savePassword, googleCallback, getInfos, login, sendFriendRequest, acceptFriendsRequest, updateProfile } from "../controllers/UserController";
 import passport from "../services/GoogleService";
 import "../services/FacebookService";
 import { authMiddleware } from "../middlewares/authMiddleware";
@@ -282,6 +282,51 @@ router.get("/auth/facebook/failed", (req, res) => { res.status(401).json({messag
  *         description: Unauthorized
  */
 router.get("/users/:id", authMiddleware ,getInfos);
+
+
+/**
+ * @swagger
+ * /users/{id}:
+ *   patch:
+ *     summary: Update user profile
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               surname:
+ *                 type: string
+ *               username:
+ *                 type: string
+ *               profile_photo:
+ *                 type: string
+ *               birth_date:
+ *                 type: string
+ *                 format: date
+ *     responses:
+ *       200:
+ *         description: Profile updated
+ *       400:
+ *         description: No valid fields to update
+ *       404:
+ *         description: User not found
+ *       401:
+ *         description: Unauthorized
+ */
+router.patch("/users/:id", authMiddleware, updateProfile);
 
 
 /**

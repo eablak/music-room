@@ -212,6 +212,45 @@ export const getInfos = async (req: Request, res: Response) => {
 };
 
 
+export const updateProfile = async (req: Request, res: Response) => {
+
+    const UPDATABLE_FIELDS = ["name", "surname", "username", "profile_photo", "birth_date"] as const;
+    type UpdatableField = typeof UPDATABLE_FIELDS[number];
+
+    const userId = req.userId;
+    const updates: Partial<Record<UpdatableField, any>> = {};
+
+    for (const field of UPDATABLE_FIELDS){
+        if (req.body[field] !== undefined){
+            updates[field] = req.body[field]
+        }
+    }
+
+    if (Object.keys(updates).length === 0){
+        return res.status(400).json({ message: "No valid fields to update"});
+    }
+
+    const userRepo = AppDataSource.getRepository(User);
+    const user = await userRepo.findOneBy({ id: userId });
+
+    if (!user){
+        return res.status(404).json({message: "User not found!"});
+    }
+
+    Object.assign(user, updates);
+    await userRepo.save(user);
+
+    return res.status(200).json({
+        name: user.name,
+        surname: user.surname,
+        username: user.username,
+        profile_photo: user.profile_photo,
+        birth_date: user.birth_date
+    })
+
+};
+
+
 export const login = async (req: Request, res: Response) => {
 
     const {email, password} = req.body;
