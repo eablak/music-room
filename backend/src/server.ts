@@ -13,6 +13,8 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use(passport.initialize());
 
 
+// rate limiting -> securing
+
 AppDataSource.initialize()
     .then(() => {
         console.log("Connected to database.");
