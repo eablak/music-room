@@ -1,9 +1,9 @@
 import { AppThemeMode } from '@/src/types';
 
 export const AppConfig = {
-  API_BASE_URL: 'https://jsonplaceholder.typicode.com',
+  API_BASE_URL: process.env.EXPO_PUBLIC_API_BASE_URL ?? 'http://localhost:3000',
   API_TIMEOUT_MS: 15000,
-  APP_NAME: 'Enterprise Boilerplate',
+  APP_NAME: 'Music Room',
 } as const;
 
 export const StorageKeys = {

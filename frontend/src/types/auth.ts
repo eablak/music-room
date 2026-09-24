@@ -1,6 +1,10 @@
 export interface IAuthUser {
   id: string;
+  name: string;
+  surname: string;
+  username: string;
   email: string;
+  profile_photo: string | null;
 }
 
 export interface IAuthSession {
@@ -8,6 +12,12 @@ export interface IAuthSession {
   accessToken: string;
   refreshToken: string;
 }
+
+export interface ILoginResponse {
+  token: string;
+  user: IAuthUser;
+}
+
 
 export interface IAuthContextValue {
   session: IAuthSession | null;
