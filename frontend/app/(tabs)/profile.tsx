@@ -10,10 +10,12 @@ import { LogOut } from 'lucide-react-native';
 
 export default function ProfileScreen() {
   const colors = useThemeColors();
-  const { signOut } = useAuth();
-  const { data, isLoading, isError, error, refetch } = useGetProfileQuery();
+  const { user, signOut } = useAuth();
 
-  const handleRetry = useCallback(() => refetch(), [refetch]);
+  const userId = user?.id;
+  const { data, isLoading, isError, error, refetch, } = useGetProfileQuery(userId!, {skip: !userId,});
+
+  const handleRetry= useCallback(() => refetch(), [refetch]);
 
   if (isError) {
     ErrorHandler.log(error, 'ProfileScreen.getProfile');
@@ -42,13 +44,13 @@ export default function ProfileScreen() {
           <View style={styles.profileHeader}>
             <View style={[styles.avatar, { backgroundColor: colors.primary[600] }]}>
               <Text style={styles.avatarText}>
-                {data.firstName[0]}
-                {data.lastName[0]}
+                {data.name[0]}
+                {data.surname[0]}
               </Text>
             </View>
             <View style={styles.profileInfo}>
               <Text style={[styles.name, { color: colors.text }]}>
-                {data.firstName} {data.lastName}
+                {data.name} {data.surname}
               </Text>
               <Text style={[styles.email, { color: colors.textMuted }]}>
                 {data.email}
