@@ -4,8 +4,13 @@ import userRoutes from "./routes/user.routes";
 import swaggerUi from "swagger-ui-express";
 import { swaggerSpec } from "./swagger";
 import passport from "passport";
+import cors from "cors";
 
 const app = express();
+
+app.use(cors({
+    origin: "http://localhost:8081",
+}));
 
 app.use(express.json());
 app.use("/", userRoutes);

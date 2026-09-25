@@ -1,56 +1,73 @@
-import { baseApi, unwrapEnvelope } from './baseApi';
+import { baseApi } from './baseApi';
 import { IApiResponse, ILoginRequest, IUserProfile } from '@/src/types';
 
+
+export interface IAuthResult {
+  accessToken: string;
+  user: IUserProfile;
+}
+
+
 export const authApi = baseApi.injectEndpoints({
+
   endpoints: (builder) => ({
+
     login: builder.mutation<IAuthResult, ILoginRequest>({
       query: (credentials) => ({
-        url: '/users/1',
-        method: 'GET',
+        url: '/auth/login',
+        method: 'POST',
+        body: credentials,
       }),
-      transformResponse: (response: unknown, _meta, arg): IAuthResult => {
-        const user = response as { id?: number; email?: string; name?: string };
-        return {
-          accessToken: `demo_${Date.now()}`,
-          refreshToken: `refresh_${Date.now()}`,
-          user: {
-            id: user.id ?? 1,
-            email: user.email ?? arg.email,
-            firstName: user.name?.split(' ')[0] ?? 'Demo',
-            lastName: user.name?.split(' ').slice(1).join(' ') ?? 'User',
-          },
-        };
+
+      transformResponse: (response: { token: string, user: {id: number; name: string; surname: string; username: string; email: string;}; }):
+        IAuthResult => {
+          return {
+            accessToken: response.token,
+            user: {
+              id: response.user.id,
+              email: response.user.email,
+              name: response.user.name,
+              surname: response.user.surname,
+              username: response.user.username,
+            },
+          };
       },
       invalidatesTags: ['Profile'],
     }),
 
-    getProfile: builder.query<IUserProfile, void>({
-      query: () => '/users/1',
-      transformResponse: (response: unknown): IUserProfile => {
-        const user = response as Partial<IUserProfile> & { name?: string };
+    getProfile: builder.query<IUserProfile, number>({
+      query: (userId) => `/users/${userId}`,
+
+      transformResponse: (response: {
+        name: string;
+        surname: string;
+        username: string;
+        profile_photo?: string | null;
+        birth_date?: string | null;
+        email?: string;
+        auth_provider?: string;
+      }): IUserProfile => {
         return {
-          id: user.id ?? 1,
-          email: user.email ?? 'demo@example.com',
-          firstName: user.name?.split(' ')[0] ?? 'Demo',
-          lastName: user.name?.split(' ').slice(1).join(' ') ?? 'User',
-          createdAt: new Date().toISOString(),
+          name: response.name,
+          surname: response.surname,
+          username: response.username,
+          profile_photo: response.profile_photo ?? null,
+          birth_date: response.birth_date ?? null,
+          email: response.email,
+          auth_provider: response.auth_provider,
         };
       },
       providesTags: ['Profile'],
     }),
 
     logout: builder.mutation<void, void>({
-      query: () => ({ url: '/users/1', method: 'GET' }),
+      queryFn: async () => {
+        return { data: undefined };
+      },
       invalidatesTags: ['Profile', 'Posts'],
     }),
   }),
 });
-
-export interface IAuthResult {
-  accessToken: string;
-  refreshToken: string;
-  user: IUserProfile;
-}
 
 export type IAuthResultType = IAuthResult;
 

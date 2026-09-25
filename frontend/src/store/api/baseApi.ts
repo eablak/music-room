@@ -23,10 +23,10 @@ export const baseApi = createApi({
   endpoints: () => ({}),
 });
 
-export function unwrapEnvelope<T>(response: unknown): T {
-  const envelope = response as IApiResponse<T>;
-  if (envelope && typeof envelope.success === 'boolean' && envelope.success) {
-    return envelope.data;
-  }
-  throw new Error(envelope?.message ?? 'İstek başarısız oldu.');
-}
+// export function unwrapEnvelope<T>(response: unknown): T {
+//   const envelope = response as IApiResponse<T>;
+//   if (envelope && typeof envelope.success === 'boolean' && envelope.success) {
+//     return envelope.data;
+//   }
+//   throw new Error(envelope?.message ?? 'İstek başarısız oldu.');
+// }

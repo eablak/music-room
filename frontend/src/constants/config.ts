@@ -8,6 +8,7 @@ export const AppConfig = {
 
 export const StorageKeys = {
   AUTH_TOKENS: 'app_auth_tokens',
+  AUTH_SESSION: 'app_auth_session',
   THEME_MODE: 'app_theme_mode',
 } as const;
 

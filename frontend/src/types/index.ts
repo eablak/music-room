@@ -29,7 +29,7 @@ export interface IApiValidationError {
 
 export interface IAuthTokens {
   accessToken: string;
-  refreshToken: string;
+  // refreshToken: string;
 }
 
 export interface ILoginRequest {
@@ -37,11 +37,15 @@ export interface ILoginRequest {
   password: string;
 }
 
-export interface IUserProfile extends IBaseModel {
-  email: string;
-  firstName: string;
-  lastName: string;
-  avatarUrl?: string;
+export interface IUserProfile {
+  id?: number;
+  name: string;
+  surname: string;
+  username: string;
+  email?: string;
+  profile_photo?: string | null;
+  birth_date?: string | null;
+  auth_provider?: string | null;
 }
 
 export type AppThemeMode = 'light' | 'dark' | 'system';
