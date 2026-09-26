@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { Formik } from 'formik';
 import { router } from 'expo-router';
@@ -15,10 +15,13 @@ import {
   IRegisterFormValues,
 } from '@/src/utils/validation';
 import { showToast } from '@/src/components/common/Toast';
+import DateTimePicker from '@react-native-community/datetimepicker';
+
 
 export default function RegisterScreen() {
   const colors = useThemeColors();
   const { signUp } = useAuth();
+  const [showDatePicker, setShowDatePicker] = useState(false);
 
   const handleSubmit = async (values: IRegisterFormValues) => {
     try {
@@ -27,7 +30,8 @@ export default function RegisterScreen() {
         values.lastName,
         values.username,
         values.email,
-        values.password
+        values.password,
+        values.birth_date
       );
       
       showToast(result.message || 'Hesabınız oluşturuldu. E-posta adresinizi doğrulayınç');
@@ -97,6 +101,50 @@ export default function RegisterScreen() {
                   touched={touched.username}
                   returnKeyType="next"
                 />
+
+              <TouchableOpacity
+                onPress={() => setShowDatePicker(true)}
+              >
+                <FormInput
+                  label="Doğum Tarihi"
+                  placeholder="Doğum Tarihiniz"
+                  value={values.birth_date}
+                  editable={false}
+                  onChangeText={() => {}}
+                  onBlur={handleBlur('birth_date')}
+                  error={errors.birth_date}
+                  touched={touched.birth_date}
+                  keyboardType='numbers-and-punctuation'
+                  returnKeyType="next"
+                />
+              </TouchableOpacity>
+
+              {showDatePicker && (
+                <DateTimePicker
+                  value={
+                    values.birth_date
+                      ? new Date(values.birth_date)
+                      : new Date(2000, 0, 1)
+                  }
+                  mode="date"
+                  display="spinner"
+                  maximumDate={new Date()}
+                  onChange={(event, selectedDate) => {
+                    setShowDatePicker(false);
+
+                    if (selectedDate) {
+                      const year = selectedDate.getFullYear();
+                      const month = String(selectedDate.getMonth() + 1).padStart(2, '0');
+                      const day = String(selectedDate.getDate()).padStart(2, '0');
+
+                      setFieldValue(
+                        'birth_date',
+                        `${year}-${month}-${day}`
+                      );
+                    }
+                  }}
+                />
+              )}
 
               <FormInput
                 label="E-posta"

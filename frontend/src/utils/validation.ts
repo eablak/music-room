@@ -20,6 +20,11 @@ export const registerValidationSchema = Yup.object().shape({
   lastName: Yup.string()
     .min(2, 'Soyad en az 2 karakter olmalıdır.')
     .required('Soyad zorunludur.'),
+  username: Yup.string()
+    .min(2, 'Kullanıcı adı en az 2 karakter olmalıdır.')
+    .required('Kullanıcı adı zorunludur.'),
+  birth_date: Yup.string()
+    .required('Doğum tarihi zorunludur.'),
   email: emailSchema,
   password: Yup.string()
     .min(6, 'Şifre en az 6 karakter olmalıdır.')
@@ -47,6 +52,7 @@ export interface IRegisterFormValues {
   firstName: string;
   lastName: string;
   username: string;
+  birth_date: string;
   email: string;
   password: string;
   confirmPassword: string;
@@ -66,6 +72,7 @@ export const registerInitialValues: IRegisterFormValues = {
   firstName: '',
   lastName: '',
   username: '',
+  birth_date: '',
   email: '',
   password: '',
   confirmPassword: '',
