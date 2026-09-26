@@ -46,6 +46,7 @@ export interface ILoginFormValues {
 export interface IRegisterFormValues {
   firstName: string;
   lastName: string;
+  username: string;
   email: string;
   password: string;
   confirmPassword: string;
@@ -64,6 +65,7 @@ export const loginInitialValues: ILoginFormValues = {
 export const registerInitialValues: IRegisterFormValues = {
   firstName: '',
   lastName: '',
+  username: '',
   email: '',
   password: '',
   confirmPassword: '',

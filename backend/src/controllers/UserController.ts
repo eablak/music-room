@@ -39,7 +39,7 @@ export const createUser = async (req: Request, res: Response) => {
 
         await sendVerificationEmail(email, token);
 
-        res.json(saved);
+        res.status(201).json({ message: "Registration successful. Please verify your email." });
 
     }catch (err: any){
         if (err.code === "23505"){

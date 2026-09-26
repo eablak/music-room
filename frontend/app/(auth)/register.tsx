@@ -22,8 +22,16 @@ export default function RegisterScreen() {
 
   const handleSubmit = async (values: IRegisterFormValues) => {
     try {
-      await signUp(values.email, values.password);
-      showToast('Hesabınız oluşturuldu.');
+      const result = await signUp(
+        values.firstName,
+        values.lastName,
+        values.username,
+        values.email,
+        values.password
+      );
+      
+      showToast(result.message || 'Hesabınız oluşturuldu. E-posta adresinizi doğrulayınç');
+      router.replace('/(auth)/login');
     } catch (error) {
       showToast((error as Error).message);
     }
@@ -79,6 +87,16 @@ export default function RegisterScreen() {
                   />
                 </View>
               </View>
+                <FormInput
+                  label="Kullanıcı Adı"
+                  placeholder="Kullanıcı Adınız"
+                  value={values.username}
+                  onChangeText={handleChange('username')}
+                  onBlur={handleBlur('username')}
+                  error={errors.username}
+                  touched={touched.username}
+                  returnKeyType="next"
+                />
 
               <FormInput
                 label="E-posta"

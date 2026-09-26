@@ -66,6 +66,24 @@ export const authApi = baseApi.injectEndpoints({
       },
       invalidatesTags: ['Profile', 'Posts'],
     }),
+
+    register: builder.mutation< {
+       message: string; },
+      { name: string;
+        surname: string;
+        username: string;
+        email: string;
+        password: string;
+        birth_date?: string;
+      }
+    >({ query: (body) => ({
+      url: '/users',
+      method: 'POST',
+      body,
+    }),
+  }),
+
+
   }),
 });
 
@@ -75,4 +93,5 @@ export const {
   useLoginMutation,
   useGetProfileQuery,
   useLogoutMutation,
+  useRegisterMutation,
 } = authApi;

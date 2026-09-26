@@ -2,7 +2,7 @@ import React, { createContext, useContext, useEffect, useState, useCallback } fr
 import { secureStorage, tokenStorage } from '@/src/utils/storage';
 import { IAuthContextValue, IAuthSession, IAuthUser } from '@/src/types/auth';
 import { StorageKeys } from '@/src/constants/config';
-import { useLoginMutation } from '@/src/store/api/authApi';
+import { useLoginMutation, useRegisterMutation } from '@/src/store/api/authApi';
 
 const AuthContext = createContext<IAuthContextValue | null>(null);
 
@@ -12,6 +12,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<IAuthSession | null>(null);
   const [initializing, setInitializing] = useState(true);
   const [login] = useLoginMutation();
+  const [register] = useRegisterMutation();
 
   useEffect(() => {
     secureStorage.get<IAuthSession>(SESSION_KEY).then((restored) => {
@@ -59,24 +60,35 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 );
 
 
-  const signUp = useCallback(async (email: string, password: string) => {
-    if (!email || !password) {
-      throw new Error('E-posta veya şifre hatalı.');
+  const signUp = useCallback(async (
+    name: string,
+    surname: string,
+    username: string,
+    email: string,
+    password: string,
+    birth_date?: string,
+  ) => {
+    if (!email || !password || !name || !surname || !username) {
+      throw new Error('Lütfen gerekli alanları doldurun.');
     }
-    // sign up ve sign out yok şu an
-    // const user: IAuthUser = { id: `user_${Date.now()}`, email };
-    // const newSession: IAuthSession = {
-    //   user,
-    //   accessToken: `access_${Date.now()}`,
-    //   refreshToken: `refresh_${Date.now()}`,
-    // };
-    // persistSession(newSession);
-  // }, [persistSession]);
-  }, []);
+
+    try{
+      const result = await register({ name, surname, username, email, password, birth_date }).unwrap();
+
+      return result;
+
+    }catch(error: any){
+     
+      const message = error?.data?.message || error?.message || "Kayıt oluşturulamadı!";
+      throw new Error(message);
+    }
+
+    
+  }, [register]);
 
 
   const signOut = useCallback(async () => {
-    persistSession(null);
+    await persistSession(null);
   }, [persistSession]);
 
   const resetPassword = useCallback(async (email: string) => {
