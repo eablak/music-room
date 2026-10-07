@@ -5,7 +5,11 @@ import swaggerUi from "swagger-ui-express";
 import { swaggerSpec } from "./swagger";
 import passport from "passport";
 import cors from "cors";
+import helmet from 'helmet';
 
+app.use(helmet({
+  crossOriginOpenerPolicy: { policy: "same-origin-allow-popups" }
+}));
 const app = express();
 
 app.use(cors({
@@ -17,6 +21,10 @@ app.use("/", userRoutes);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use(passport.initialize());
 
+app.use((req, res, next) => {
+  res.setHeader("Cross-Origin-Opener-Policy", "same-origin-allow-popups");
+  next();
+});
 
 // rate limiting -> securing
 
