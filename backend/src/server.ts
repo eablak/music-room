@@ -1,3 +1,5 @@
+import dotenv from "dotenv";
+dotenv.config({ path: "../.env" });
 import express from "express";
 import { AppDataSource } from "./data-source";
 import userRoutes from "./routes/user.routes";
@@ -7,10 +9,13 @@ import passport from "passport";
 import cors from "cors";
 import helmet from 'helmet';
 
+
+const app = express();
+
 app.use(helmet({
   crossOriginOpenerPolicy: { policy: "same-origin-allow-popups" }
 }));
-const app = express();
+
 
 app.use(cors({
     origin: "http://localhost:8081",
