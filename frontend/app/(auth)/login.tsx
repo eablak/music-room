@@ -17,7 +17,7 @@ import { showToast } from '@/src/components/common/Toast';
 
 export default function LoginScreen() {
   const colors = useThemeColors();
-  const { signIn, googleSignIn } = useAuth();
+  const { signIn, socialSignIn } = useAuth();
 
   const handleSubmit = async (values: ILoginFormValues) => {
     try {
@@ -91,7 +91,7 @@ export default function LoginScreen() {
               label="Google ile giriş yap"
               onPress={async () => {
                 try {
-                  await googleSignIn();
+                  await socialSignIn('google');
                 } catch (error) {
                   showToast((error as Error).message);
                 }
@@ -104,7 +104,7 @@ export default function LoginScreen() {
               label="Facebook ile giriş yap"
               onPress={async () => {
                 try {
-                  await googleSignIn();
+                  await socialSignIn('facebook');
                 } catch (error) {
                   showToast((error as Error).message);
                 }

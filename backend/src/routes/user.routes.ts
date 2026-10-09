@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { changePassword, createUser, getUsers, verifyEmail, savePassword, googleCallback, getInfos, login, sendFriendRequest, acceptFriendsRequest, updateProfile, showResetPasswordPage, updateProfileVisibility, getProfileVisibility, getAuthUserProfileInfos } from "../controllers/UserController";
+import { changePassword, createUser, getUsers, verifyEmail, savePassword, googleCallback, getInfos, login, sendFriendRequest, acceptFriendsRequest, updateProfile, showResetPasswordPage, updateProfileVisibility, getProfileVisibility, getAuthUserProfileInfos, facebookCallback} from "../controllers/UserController";
 import passport from "../services/GoogleService";
 import "../services/FacebookService";
 import { authMiddleware } from "../middlewares/authMiddleware";
@@ -168,7 +168,13 @@ router.get("/reset-password", showResetPasswordPage);
  *       302:
  *         description: Redirects the user to Google for authentication
  */
-router.get("/auth/google", passport.authenticate("google", { session: false, scope: ["email", "profile"], }));
+router.get("/auth/google", (req, res, next) => {
+	passport.authenticate("google", {
+		session: false,
+		scope: ["email", "profile"],
+		state: typeof req.query.redirect_uri === "string" ? req.query.redirect_uri : undefined,
+	})(req, res, next);
+});
 
 
 /**
@@ -220,7 +226,13 @@ router.get("/auth/google/failed", (req, res) => { res.status(401).json({message:
  *       302:
  *         description: Redirects the user to Facebook for authentication
  */
-router.get("/auth/facebook", passport.authenticate("facebook", { session: false, scope: ["email", "public_profile"], }));
+router.get("/auth/facebook", (req, res, next) => {
+	passport.authenticate("facebook", {
+		session: false,
+		scope: ["email", "public_profile"],
+		state: typeof req.query.redirect_uri === "string" ? req.query.redirect_uri : undefined,
+	})(req, res, next);
+});
 
 
 /**
@@ -236,7 +248,7 @@ router.get("/auth/facebook", passport.authenticate("facebook", { session: false,
  *       401:
  *         description: Facebook login failed
  */
-router.get("/auth/facebook/callback", passport.authenticate("facebook", { session: false, failureRedirect: "/auth/facebook/failed"}), googleCallback);
+router.get("/auth/facebook/callback", passport.authenticate("facebook", { session: false, failureRedirect: "/auth/facebook/failed"}), facebookCallback);
 
 
 /**

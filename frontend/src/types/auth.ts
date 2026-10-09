@@ -1,3 +1,5 @@
+import type { SocialProvider } from '@/src/services/SocialAuthServices';
+
 export interface IAuthUser {
   id: number;
   name: string;
@@ -27,5 +29,5 @@ export interface IAuthContextValue {
   signUp: (name: string, surname: string, username: string, email: string, password: string, birth_date?: string,) => Promise<{message:string}>;
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<{message: string}>;
-  googleSignIn: () => Promise<void>;
+  socialSignIn: (provider: SocialProvider) => Promise<void>;
 }
